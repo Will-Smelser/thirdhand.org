@@ -27,7 +27,7 @@ include '../includes/base.php';
 ?>
 <h2>Admin Login</h2>
 <?php 
-session_start();
+@session_start();
 
 if(isset($_SESSION['User'])){
 	echo "<p>Logged In As: <b>{$_SESSION['User']['email']}</b></p>";

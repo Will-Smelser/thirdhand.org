@@ -39,10 +39,10 @@ if(!empty($_POST)){
 			if(!$result){echo mysql_error();exit;}
 			
 			$row = mysql_fetch_assoc($result);
-			
+
 			session_start();
-			if(empty($row) || $row['pass2'] != $password){
-				$_SESSION['flash'] == 'Invalid Username or Password';
+			if(empty($row) || $row['pass2'] !== $password){
+				$_SESSION['flash'] = 'Invalid Username or Password';
 			} else {
 				$_SESSION['User'] = $row;
 				unset($_SESSION['User']['pass2']);
@@ -59,7 +59,7 @@ if(!empty($_POST)){
 					$_SESSION['groups'][$row['groups_id']] = $row['name'];
 				}	
 			}
-						
+					
 			header('Location: login.php');
 			exit;
 		case 'logout':
