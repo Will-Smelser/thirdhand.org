@@ -1,5 +1,6 @@
 <?php 
 include '../includes/base.php';
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/YBDB Template.dwt.php" codeOutsideHTMLIsLocked="false" -->
@@ -27,7 +28,6 @@ include '../includes/base.php';
 ?>
 <h2>Admin Login</h2>
 <?php 
-@session_start();
 
 if(isset($_SESSION['User'])){
 	echo "<p>Logged In As: <b>{$_SESSION['User']['email']}</b></p>";

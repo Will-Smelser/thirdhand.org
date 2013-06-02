@@ -50,7 +50,7 @@ $editFormAction = $_SERVER['PHP_SELF'] . "?contact_id={$contact_id}&shop_id={$sh
 
 if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "form1")) {
 	$groupid = (isAdmin()) ? $_post['groups_id'] : 3;
-  $updateSQL = sprintf("UPDATE contacts SET first_name=%s, middle_initial=%s, last_name=%s, email=%s, DOB=%s, receive_newsletter=%s, phone=%s, address1=%s, address2=%s, city=%s, `state`=%s, zip=%s, pass=ENCODE(%s,'yblcatx'), groups_id=%s WHERE contact_id=%s",
+  $updateSQL = sprintf("UPDATE contacts SET first_name=%s, middle_initial=%s, last_name=%s, email=%s, DOB=%s, receive_newsletter=%s, phone=%s, address1=%s, address2=%s, city=%s, `state`=%s, zip=%s, pass=ENCODE(%s,'yblcatx'), groups_id=%s, expires=%s WHERE contact_id=%s",
                        GetSQLValueString($_POST['first_name'], "text"),
                        GetSQLValueString($_POST['middle_initial'], "text"),
                        GetSQLValueString($_POST['last_name'], "text"),
@@ -65,6 +65,7 @@ if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "form1")) {
                        GetSQLValueString($_POST['zip'], "text"),
 					   GetSQLValueString($_POST['password'], "text"),
 					   GetSQLValueString($groupid, "int"),
+  						GetSQLValueString($_POST['expires'], "text"),
 					   GetSQLValueString($_POST['contact_id'], "int")
 					   );
 	
@@ -198,6 +199,9 @@ $totalRows_Recordset1 = mysql_num_rows($Recordset1);
 		     	?>
 		     	</select>
 		     	</td>
+		     </tr>
+		     <tr>
+		     	<td nowrap align="right">Member Expires Date</td><td><input type="text" name="expires" value="<?php echo $row_Recordset1['expires']; ?>" size="32" />
 		     </tr>	
 		     <?php
 		     } else {

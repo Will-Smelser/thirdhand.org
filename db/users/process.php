@@ -26,7 +26,7 @@ if(!empty($_POST)){
 		case 'login':
 			$password = $_POST['password'];
 			$email = mysql_real_escape_string($_POST['email']);
-			
+			var_dump($_post);
 			$sql="PREPARE stmnt FROM \"SELECT *, DECODE(pass,'yblcatx') AS pass2 FROM contacts WHERE email = ?\"";
 			
 			$result = mysql_query($sql);
@@ -39,10 +39,10 @@ if(!empty($_POST)){
 			if(!$result){echo mysql_error();exit;}
 			
 			$row = mysql_fetch_assoc($result);
-
+			
 			session_start();
-			if(empty($row) || $row['pass2'] !== $password){
-				$_SESSION['flash'] = 'Invalid Username or Password';
+			if(empty($row) || $row['pass2'] != $password){
+				$_SESSION['flash'] == 'Invalid Username or Password';
 			} else {
 				$_SESSION['User'] = $row;
 				unset($_SESSION['User']['pass2']);
@@ -59,7 +59,7 @@ if(!empty($_POST)){
 					$_SESSION['groups'][$row['groups_id']] = $row['name'];
 				}	
 			}
-					
+						
 			header('Location: login.php');
 			exit;
 		case 'logout':
@@ -112,10 +112,12 @@ if(!empty($_POST)){
 		case 'get_user_hours':
 			$id = (int) $_GET['contact_id'];
 			$sql = "SELECT c . * , COUNT( sh.contact_id ) AS vh_visits, " .
+				"(SELECT SUM(hours) FROM shop_hours_remove WHERE contact_id = $id) AS rm_hours, " .
 				"TRUNCATE(SUM( UNIX_TIMESTAMP( time_out ) - UNIX_TIMESTAMP( time_in ) )/3600,2) " .
 					"AS vh_hours " .
 				"FROM shop_hours AS sh " .
 				"LEFT JOIN contacts AS c ON c.contact_id = sh.contact_id " .
+				//"LEFT JOIN shop_hours_remove AS shr ON c.contact_id = shr.contact_id " .
 				"WHERE c.contact_id = $id && shop_user_role='Volunteer'";
 			
 			$result = mysql_query($sql);
@@ -124,6 +126,53 @@ if(!empty($_POST)){
 			
 			$row = mysql_fetch_assoc($result);
 			echo json_encode($row);		
+			exit;
+		case 'get_users_hours_remove':
+			$id = (int) $_GET['contact_id'];
+			$sql = "SELECT contact_id,SUM(hours) AS hours FROM shop_hours_remove WHERE contact_id = $id GROUP BY contact_id";
+			$result = mysql_query($sql);
+				
+			if(!$result){
+				echo "{result:false}";exit;
+			}
+				
+			$row = mysql_fetch_assoc($result);
+			echo json_encode($row);
+			exit;
+		case 'hours_remove_update':
+			session_start();
+			$id = (int) $_POST['contact'];
+			$hours = $_POST['hours'];
+			
+			//clean
+			$sql = "DELETE FROM shop_hours_remove WHERE contact_id = $id";
+			$result = mysql_query($sql);
+			
+			if(!$result){
+				echo "{result:false}";exit;
+			}
+			
+			//update
+			$sql = "PREPARE stmnt FROM \"INSERT INTO shop_hours_remove ( contact_id, hours ) VALUE (?,?)\"";
+			$result = mysql_query($sql);
+			if(!$result){
+				echo mysql_error();exit;
+			}
+			
+			if(!mysql_query("SET @a = $id")){
+				echo '1-'.mysql_error();exit;
+			}
+			if(!mysql_query("SET @b = $hours")){
+				echo '2-'.mysql_error();exit;
+			}
+				
+			$result = mysql_query('EXECUTE stmnt USING @a,@b;');
+			if(!$result){
+				echo mysql_error();exit;
+			}
+				
+			$_SESSION['flash'] = "Updated Volunteer Remove Hours ($hours hrs)";
+			header('Location: hours_update_remove.php');
 			exit;
 		case 'hours_remove':
 			$contact = $_POST['contact'];
@@ -144,6 +193,7 @@ if(!empty($_POST)){
 			
 			$shop = 0;
 			
+			/*
 			$sql = "PREPARE stmnt FROM \"INSERT INTO shop_hours (contact_id, shop_id, shop_user_role, time_in, time_out, comment) VALUES (?,?,?,?,?,?)\"";
 			$result = mysql_query($sql);
 			if(!$result){echo mysql_error();exit;}
@@ -156,6 +206,19 @@ if(!empty($_POST)){
 			if(!mysql_query("SET @f = 'Removing Volunteer Hours'")){echo '5-'.mysql_error();exit;}
 			
 			$result = mysql_query('EXECUTE stmnt USING @a,@b,@c,@d,@e,@f;');
+			if(!$result){echo mysql_error();exit;}
+			*/
+			
+			$sql = "PREPARE stmnt FROM \"INSERT INTO shop_hours_remove ( contact_id, hours ) VALUE (?,?)\"";
+			$result = mysql_query($sql);
+			if(!$result){
+				echo mysql_error();exit;
+			}
+				
+			if(!mysql_query("SET @a = $contact")){echo '1-'.mysql_error();exit;}
+			if(!mysql_query("SET @b = $hours")){echo '2-'.mysql_error();exit;}
+			
+			$result = mysql_query('EXECUTE stmnt USING @a,@b;');
 			if(!$result){echo mysql_error();exit;}
 			
 			$_SESSION['flash'] = "Updated Volunteer Hours (Removed $hours hrs)";
@@ -196,6 +259,17 @@ if(!empty($_POST)){
 			
 			$_SESSION['flash'] = "Added Volunteer Hours ($hours hrs)";
 			header('Location: hours_add.php');
+			exit;
+		case 'fix_hours':
+			session_start();
+			$sql = 'UPDATE `shop_hours` SET `time_out` = `time_in` WHERE `time_out` = "0000-00-00 00:00:00";';
+			$result = mysql_query($sql);
+			if(!$result){
+				echo mysql_error();exit;
+			}
+			$count = mysql_affected_rows();
+			$_SESSION['flash'] = "Updated $count Users Hours";
+			header('Location: index.php');
 			exit;
 	}
 }

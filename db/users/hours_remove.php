@@ -72,10 +72,14 @@ $sql = "SELECT c . * , COUNT( sh.contact_id ) AS vh_visits, " .
 		var id = $(this).val();
 		$('#contact').val(id);
 		$.getJSON('process.php?action=get_user_hours&contact_id='+id,function(data){
+			
 			if(data.vh_hours == 0 || data.vh_hours == null){
 				data.vh_hours = 0;
 			}
-			hours = data.vh_hours;
+			if(data.rm_hours == 0 || data.rm_hours == null){
+				data.rm_hours = 0;
+			}
+			hours = Math.floor((data.vh_hours - data.rm_hours)*100)/100;
 
 			//never logged out
 			if(hours < 0){
@@ -85,7 +89,7 @@ $sql = "SELECT c . * , COUNT( sh.contact_id ) AS vh_visits, " .
 			}
 
 			
-			$('#info').html(data.vh_hours);
+			$('#info').html(hours);
 			$('#unit').show();
 
 			

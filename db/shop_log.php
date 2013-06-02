@@ -15,7 +15,7 @@ echo <<<EOD
 <!--
  function getgoing()
   {
-    top.location="shop_welcome.php";
+    //top.location="shop_welcome.php";
    }
  
  setTimeout('getgoing()',$sec_delay);
@@ -50,7 +50,7 @@ if($_GET['new_user_id']>0){
 }
 	
 	
-$query_Recordset1 = "SELECT shop_hours.shop_visit_id, shop_hours.contact_id, shop_hours.shop_user_role, shop_hours.project_id, shop_hours.time_in, shop_hours.time_out, TIME_FORMAT(TIMEDIFF(time_out, time_in),'%k:%i') as et, shop_hours.comment, CONCAT(contacts.last_name, ', ', contacts.first_name, ' ',contacts.middle_initial) AS full_name, contacts.first_name FROM shop_hours
+$query_Recordset1 = "SELECT contacts.expires, shop_hours.shop_visit_id, shop_hours.contact_id, shop_hours.shop_user_role, shop_hours.project_id, shop_hours.time_in, shop_hours.time_out, TIME_FORMAT(TIMEDIFF(time_out, time_in),'%k:%i') as et, shop_hours.comment, CONCAT(contacts.last_name, ', ', contacts.first_name, ' ',contacts.middle_initial) AS full_name, contacts.first_name FROM shop_hours
 LEFT JOIN shop_user_roles ON shop_hours.shop_user_role=shop_user_roles.shop_user_role_id
 LEFT JOIN contacts ON shop_hours.contact_id=contacts.contact_id
 WHERE shop_hours.shop_id = $shop_id ORDER BY hours_rank, time_in DESC;";
@@ -176,6 +176,7 @@ if (($_GET['welcome'] == 'yes') AND ($shop_type == 'Open Shop'))
       <table width="760" border="1" cellpadding="1" cellspacing="0" bordercolor="#CCCCCC">
 	  <tr bordercolor="#CCCCCC" bgcolor="#99CC33">
 		<td height="35"><strong>Shop User </strong></td>
+		<td height="35"><strong>Membership Expires </strong></td>
 		<td height="35" bgcolor="#99CC33"><strong>Status</strong></td>
 		<td width="70" height="35"><strong>Time In </strong></td>
 		<td width="70" height="35"><strong>Time Out </strong></td>
@@ -187,6 +188,7 @@ if (($_GET['welcome'] == 'yes') AND ($shop_type == 'Open Shop'))
 		<td height="40" valign="bottom"><strong>New User:</strong><br>
 		      <span class="yb_standard_small">&nbsp;&nbsp;Not in the list: Create <a href="<?php echo $page_edit_contact; ?>?contact_id=new_contact&shop_id=<?php echo $shop_id?>">New User</a></span>
 			  <?php list_contacts_select_user('contact_id', $new_user_id); ?></td>
+		<td>&nbsp;</td>
 		<td valign="bottom"><strong>
 		  <?php list_shop_user_roles('user_role','Personal'); ?>
 		</strong></td>
@@ -205,14 +207,19 @@ if (($_GET['welcome'] == 'yes') AND ($shop_type == 'Open Shop'))
 	  <input type="hidden" name="MM_insert" value="form_new">
 	</form>
 	<tr valign="bottom" bordercolor="#CCCCCC" bgcolor="#99CC33">
-	    <td height="25" colspan="6" bgcolor="#99CC33">&nbsp;&nbsp;&nbsp;&nbsp;Existing Shop Users:</td>
+	    <td height="25" colspan="7" bgcolor="#99CC33">&nbsp;&nbsp;&nbsp;&nbsp;Existing Shop Users:</td>
 	    </tr>
 	  <?php while ($row_Recordset1 = mysql_fetch_assoc($Recordset1)) { //do { 
 	  if($visit_id == $row_Recordset1['shop_visit_id']) {?>
 	  <form method="post" name="FormUpdate_<?php echo $row_Recordset1['shop_visit_id']; ?>" action="<?php echo $editFormAction; ?>">
+	  <?php 
+	  	$color = (strtotime($row_Recordset1['expires']) < time()) ? 'red' : 'black'; 
+	  ?>
+	  
 	  <tr valign="bottom" bordercolor="#CCCCCC" bgcolor="#CCCC33">
-		<td>Edit Record: <br> 
+		<td>Edit Record:<br> 
 		  <?php list_contacts('contact_id', $row_Recordset1['contact_id']); ?></td>
+		<td style="color:<?php echo $color; ?>"><?php echo ($row_Recordset1['expires']=='mm/dd/yy') ? 'N/A' : $row_Recordset1['expires']; ?></td>
 		<td><?php list_shop_user_roles('user_role', $row_Recordset1['shop_user_role']); ?></td>
 		<td><?php list_time($shop_start_time,'0000-00-00 00:00:00','time_in',-60,0,$row_Recordset1['time_in'],16); ?></td>
 		<td><?php 
@@ -243,8 +250,14 @@ if (($_GET['welcome'] == 'yes') AND ($shop_type == 'Open Shop'))
 		</form>
 	<?php } else { //This section executes if it is not the visit_id selected NOT FOR EDIT ?> 
 	<form method="post" name="FormUpdate_<?php echo $row_Recordset1['shop_visit_id']; ?>" action="<?php echo $editFormAction; ?>">
+	  <?php 
+	  	$color = (strtotime($row_Recordset1['expires']) < time()) ? 'red' : 'black'; 
+	  ?>
+	  
 	  <tr bordercolor="#CCCCCC">
-		<td><a href="<?php echo "{$page_individual_history_log}?contact_id=" . $row_Recordset1['contact_id']; ?>"><?php echo $row_Recordset1['full_name']; ?></a></td>
+		<td>
+		<a href="<?php echo "{$page_individual_history_log}?contact_id=" . $row_Recordset1['contact_id']; ?>"><?php echo $row_Recordset1['full_name']; ?></a></td>
+		<td style="color:<?php echo $color; ?>"><?php echo ($row_Recordset1['expires']=='mm/dd/yy') ? 'N/A' : $row_Recordset1['expires']; ?></td>
 		<td><?php echo $row_Recordset1['shop_user_role']; ?></td>
 		<td><?php echo date_to_time($row_Recordset1['time_in']); ?></td>
 		<td><?php echo list_time($row_Recordset1['time_in'],$row_Recordset1['time_out'],'time_out',0,1,'none', 8,$row_Recordset1['et']); ?></td>

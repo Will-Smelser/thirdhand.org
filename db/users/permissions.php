@@ -65,20 +65,21 @@ buildFileList($_SERVER['DOCUMENT_ROOT'] . '/db', $files);
 
 <?php 
 	$curGroup = '';
-	foreach($perms as $id=>$group){	
-
-		echo "<form action='process.php' method='POST' >\n";
-		echo "<input type='hidden' value='permissions_update' name='action' />";
-		echo "<input type='hidden' value='{$id}' name='group' />";
-		echo "<h4>{$info[$id]['name']}</h4>\n";
-		
-		echo "<select multiple=\"multiple\" name=\"{$id}[]\" />\n";
+	foreach($perms as $id=>$group){
+		$first = true;
 		
 		foreach($files as $file){
+			if($first){
+				echo "<form action='process.php' method='POST' >\n";
+				echo "<input type='hidden' value='permissions_update' name='action' />";
+				echo "<input type='hidden' value='{$id}' name='group' />";
+				echo "<h4>{$info[$id]['name']}</h4>\n";
+				echo "<select multiple=\"multiple\" name=\"{$id}[]\" />\n";
+			}
 			$selected = (in_array($file,$group)) ? 'selected' : '';
 			echo "<option value='{$file}' $selected>{$file}</option>\n";
+			$first = false;
 		}
-		
 		echo "</select>\n<br/>";
 		echo "<input type='submit' value='Update' />";
 		echo "</form>\n";

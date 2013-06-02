@@ -1,5 +1,6 @@
 <?php 
 include '../includes/base.php';
+session_start();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/YBDB Template.dwt.php" codeOutsideHTMLIsLocked="false" -->
@@ -18,11 +19,19 @@ include '../includes/base.php';
 	</tr>
 	<tr>
 	  <td><!-- InstanceBeginEditable name="Body" -->
+	  	<?php if(isset($_SESSION['flash'])){ ?>
+		<p style="border:solid black 2px;background-color:#333;color:#FFF;padding:5px;"><?php echo $_SESSION['flash']; ?></p>
+		<?php 
+				unset($_SESSION['flash']);
+			} 
+		?>
 	  	<ul>
 	  		<li><a href='login.php' >Login / Logout</a></li>
 	  		<li><a href='permissions.php'>Update Permissions</a></li>
 	  		<li><a href='hours_remove.php'>Remove Hours</a></li>
+	  		<li><a href='hours_update_remove.php'>Update Remove Hours</a></li>
 	  		<li><a href='hours_add.php'>Add Hours</a></li>
+	  		<li><a href='process.php?action=fix_hours'>Fix Hours</a></li>
 	  	</ul>
 	  	
 	  
