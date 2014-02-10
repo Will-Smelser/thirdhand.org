@@ -81,12 +81,13 @@ SELECT * FROM
 	ON total_hours.contact_id = volunteer_hours3.vh3_contact_id
 
 	LEFT JOIN (
-		SELECT ROUND(SUM(hours),2) AS rm_hours,contact_id 
+		SELECT ROUND(SUM(hours),2) AS rm_hours, contact_id as my_contact_id
 		
 		FROM shop_hours_remove 
 		
 		GROUP BY contact_id
-	) AS removed_hours ON total_hours.contact_id = removed_hours.contact_id
+
+	) AS removed_hours ON total_hours.contact_id = removed_hours.my_contact_id
 ";
 $Recordset1 = mysql_query($query_Recordset1, $YBDB) or die(mysql_error());
 //$row_Recordset1 = mysql_fetch_assoc($Recordset1);   //Wait to fetch until do loop

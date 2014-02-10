@@ -4,14 +4,26 @@ include '../includes/base.php';
 include_once '../Connections/YBDB.php';
 include_once '../Connections/database_functions.php';
 
+/*
 $sql = "SELECT c . * , COUNT( sh.contact_id ) AS vh_visits, " .
 	"ROUND( SUM( HOUR( SUBTIME( TIME( time_out ) , TIME( time_in ) ) ) + MINUTE( SUBTIME( TIME( time_out ) , TIME( time_in ) ) ) /60 ) ) " .
 		"AS vh_hours " .
 	"FROM shop_hours AS sh " .
 	"LEFT JOIN contacts AS c ON c.contact_id = sh.contact_id " .
 	"GROUP BY contact_id";
-
-
+*/
+$sql = <<<SQL
+SELECT c . * , COUNT( sh.contact_id ) AS vh_visits,
+	TRUNCATE(SUM( UNIX_TIMESTAMP( time_out ) - UNIX_TIMESTAMP( time_in ) )/3600,2) AS vh_hours
+	/*
+	ROUND(
+		SUM(
+			HOUR( SUBTIME( TIME( time_out ) , TIME( time_in ) ) ) + MINUTE( SUBTIME( TIME( time_out ) , TIME( time_in ) ) ) /60 ) ) AS vh_hours
+	*/
+	FROM shop_hours AS sh
+	LEFT JOIN
+		contacts AS c ON c.contact_id = sh.contact_id GROUP BY contact_id;
+SQL;
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/YBDB Template.dwt.php" codeOutsideHTMLIsLocked="false" -->

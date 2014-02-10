@@ -29,9 +29,9 @@ session_start();
 	  		<li><a href='login.php' >Login / Logout</a></li>
 	  		<li><a href='permissions.php'>Update Permissions</a></li>
 	  		<li><a href='hours_remove.php'>Remove Hours</a></li>
-	  		<li><a href='hours_update_remove.php'>Update Remove Hours</a></li>
+	  		<li><a href='hours_update_remove.php'>Refund Hours</a></li>
 	  		<li><a href='hours_add.php'>Add Hours</a></li>
-	  		<li><a href='process.php?action=fix_hours'>Fix Hours</a></li>
+	  		<li><a href='process.php?action=fix_hours'>Logout All</a></li>
 	  	</ul>
 	  	
 	  

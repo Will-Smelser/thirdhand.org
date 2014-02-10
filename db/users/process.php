@@ -118,7 +118,7 @@ if(!empty($_POST)){
 				"FROM shop_hours AS sh " .
 				"LEFT JOIN contacts AS c ON c.contact_id = sh.contact_id " .
 				//"LEFT JOIN shop_hours_remove AS shr ON c.contact_id = shr.contact_id " .
-				"WHERE c.contact_id = $id && shop_user_role='Volunteer'";
+				"WHERE c.contact_id = $id && shop_user_role in ('Volunteer','Coordinator')";
 			
 			$result = mysql_query($sql);
 			
