@@ -49,7 +49,7 @@ if($_GET['contact_id'] == 'new_contact'){
 $editFormAction = $_SERVER['PHP_SELF'] . "?contact_id={$contact_id}&shop_id={$shop_id}";
 
 if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "form1")) {
-	$groupid = (isAdmin()) ? $_post['groups_id'] : 3;
+	$groupid = (isAdmin()) ? $_POST['groups_id'] : 3;
   $updateSQL = sprintf("UPDATE contacts SET first_name=%s, middle_initial=%s, last_name=%s, email=%s, DOB=%s, receive_newsletter=%s, phone=%s, address1=%s, address2=%s, city=%s, `state`=%s, zip=%s, pass=ENCODE(%s,'yblcatx'), groups_id=%s, expires=%s WHERE contact_id=%s",
                        GetSQLValueString($_POST['first_name'], "text"),
                        GetSQLValueString($_POST['middle_initial'], "text"),
@@ -191,11 +191,14 @@ $totalRows_Recordset1 = mysql_num_rows($Recordset1);
 		     	<td nowrap align="right">User Group</td><td>
 		     	<select name="groups_id">
 		     	<?php 
-		     	
+		     	    $selected = '';
 		     		foreach($_SESSION['groups'] as $id=>$name){
-		     			$selected = ($row_Recordset1['groups_id'] == $id) ? 'selected' : '';
+		     			$selected = ($row_Recordset1['groups_id'] == $id) ? 'selected' : '  ';
 		     			echo "<option value='$id' $selected>$name</option>";
 		     		}
+
+                    if($selected === '')
+                        echo "<option value='0' selected>None Set</option>";
 		     	?>
 		     	</select>
 		     	</td>

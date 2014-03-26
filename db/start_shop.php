@@ -141,7 +141,7 @@ if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "ChangeDate")) {
                   <td><strong>Edit</strong></td>
                 </tr>
                 <tr>
-                  <td height="30" colspan="6"><a href="http://db.thirdhand.org/individual_hours_log.php">Log Non-Shop Hours</a> </td>
+                  <td height="30" colspan="6"><a href="http://thirdhand.org/db/individual_hours_log.php">Log Non-Shop Hours</a> </td>
                 </tr>
                 <form action="<?php echo $editFormAction; ?>" method="post" name="form_new" id="form_new">
                   <tr>
